@@ -12,9 +12,9 @@ import (
 
 	"github.com/gorilla/handlers"
 
-	"github.com/gopherschool/http-rest-api/internal/app/model"
+	"github.com/Elaman122/Go-project/internal/app/model"
 
-	"github.com/gopherschool/http-rest-api/internal/app/store"
+	"github.com/Elaman122/Go-project/internal/app/store"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
 )

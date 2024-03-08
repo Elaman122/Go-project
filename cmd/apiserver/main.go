@@ -3,10 +3,10 @@ package main
 import (
 	"flag"
 	"log"
-
+	"net/http"
 	"github.com/BurntSushi/toml"
 
-	"github.com/gopherschool/http-rest-api/internal/app/apiserver"
+	"github.com/Elaman122/Go-project/internal/app/apiserver"
 )
 
 var (
@@ -14,7 +14,7 @@ var (
 )
 
 func init() {
-	flag.StringVar(&configPath, "config-path", "configs/apiserver.toml", "path to config file")
+	flag.StringVar(&configPath, "config-path", "apiserver.toml", "path to config file")
 }
 
 func main() {
@@ -25,6 +25,10 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+        w.Write([]byte("Hello, World!"))
+    })
 
 	if err := apiserver.Start(config); err != nil {
 		log.Fatal(err)

@@ -1,8 +1,8 @@
 package teststore
 
 import (
-	"github.com/gopherschool/http-rest-api/internal/app/model"
-	"github.com/gopherschool/http-rest-api/internal/app/store"
+	"github.com/Elaman122/Go-project/internal/app/model"
+	"github.com/Elaman122/Go-project/internal/app/store"
 )
 
 // Store ...
