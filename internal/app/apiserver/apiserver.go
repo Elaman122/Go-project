@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"net/http"
 
-	"github.com/Elaman122/Go-project/internal/app/store/sqlstore"/internal/app/store/sqlstore"
+	"github.com/Elaman122/Go-project/internal/app/store/sqlstore"
 	"github.com/gorilla/sessions"
 	_ "github.com/lib/pq" // ...
 )

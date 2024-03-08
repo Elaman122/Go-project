@@ -6,7 +6,7 @@ import (
 	"github.com/Elaman122/Go-project/internal/app/model"
 	"github.com/Elaman122/Go-project/internal/app/store"
 	"github.com/Elaman122/Go-project/internal/app/store/sqlstore"
-	"github.com/Elaman122/Go-project/assert"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestUserRepository_Create(t *testing.T) {

@@ -1,4 +1,4 @@
-module github.com/gopherschool/http-rest-api
+module github.com/Elaman122/Go-project
 
 go 1.12
 

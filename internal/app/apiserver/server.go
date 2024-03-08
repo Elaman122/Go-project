@@ -20,7 +20,7 @@ import (
 )
 
 const (
-	sessionName        = "gopherschool"
+	sessionName        = "postgres"
 	ctxKeyUser  ctxKey = iota
 	ctxKeyRequestID
 )
