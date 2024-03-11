@@ -87,7 +87,7 @@ func main() {
 
 
     // Delete
-
+    
     for _, menu := range menus {
 		if err := app.models.Menu.Delete(menu.ID); err != nil {
 			log.Printf("Ошибка при удалении элемента из базы данных: %v", err)

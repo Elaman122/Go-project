@@ -1,35 +1,37 @@
 # Currency Exchange Project
 
 ## Overview
-Этот проект представляет собой RESTful API для управления информацией о валютах.
+This project is a RESTful API for managing currency information.
 
 ## Endpoints
-- `POST /api/v1/menus`: Создание новой валюты.
-- `GET /api/v1/menus/:id`: Получение информации о валюте по идентификатору.
-- `PUT /api/v1/menus/:id`: Обновление информации о валюте по идентификатору.
-- `DELETE /api/v1/menus/:id`: Удаление валюты по идентификатору.
+- `POST /api/v1/menus`:  Create a new currency.
+- `GET /api/v1/menus/:id`: Get currency information by identifier.
+- `PUT /api/v1/menus/:id`: Update currency information by identifier.
+- `DELETE /api/v1/menus/:id`: Delete currency by identifier.
 
 ## Database Structure
-Структура базы данных представлена следующим образом:
+The database structure is represented as follows:
 
 ### Таблица `currency`
-- `id`: уникальный идентификатор валюты (целое число).
-- `code`: код валюты (строка).
-- `rate`: курс обмена (десятичное число).
-- `timestamp`: временная метка (временная метка).
+- `id`: unique currency identifier (integer).
+- `code`: currency code (string).
+- `rate`: exchange rate (decimal number).
+- `timestamp`: timestamp (timestamp).
 
 ## Usage
-Для использования этого API выполните следующие шаги:
+To use this API, follow these steps:
 
-1. Установите все необходимые зависимости с помощью `go mod tidy`.
-2. Запустите приложение с помощью `go run main.go`.
-3. Используйте соответствующие HTTP-запросы для взаимодействия с API.
+1. Install all necessary dependencies using go mod tidy.
+2. Run the application using go run .
+3. Use the corresponding HTTP requests to interact with the API.
 
 ## Technologies Used
-- Go: язык программирования.
-- Gin: фреймворк для создания веб-приложений.
-- PostgreSQL: система управления реляционными базами данных.
+- Go: programming language.
+- Gin: web framework for building web applications.
+- PostgreSQL: relational database management system.
 
 ## Author
-[Elaman122]
+1. name : `Daniar Elaman`
+2. ID : `22B031171` 
+
 
