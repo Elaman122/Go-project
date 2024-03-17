@@ -12,7 +12,7 @@ import (
 	_ "github.com/lib/pq"
 )
 
-//config
+// config
 type config struct {
 	port string
 	env  string
@@ -20,19 +20,19 @@ type config struct {
 		dsn string
 	}
 }
-// application 
+
+// application
 type application struct {
 	config config
 	models model.Models
 }
 
 type Menu struct {
-    ID        int       `json:"id"`
-    Code      string    `json:"code"`
-    Rate      float64   `json:"rate"`
-    Timestamp time.Time `json:"timestamp"`
+	ID        int       `json:"id"`
+	Code      string    `json:"code"`
+	Rate      float64   `json:"rate"`
+	Timestamp time.Time `json:"timestamp"`
 }
-
 
 func main() {
 	var cfg config
@@ -58,17 +58,16 @@ func main() {
 		{ID: 68, Code: "KZT", Rate: 0.0023},
 	}
 
-	
 	// Используем err для операции Insert
 	/*
-	for _, m := range menus {
-		if err := app.models.Menu.Insert(&m); err != nil {
-			log.Printf("Ошибка при добавлении элемента в базу данных: %v", err)
-			} else {
-				log.Println("Элемент успешно добавлен в базу данных")
-			}
-	}
-	*/	
+		for _, m := range menus {
+			if err := app.models.Menu.Insert(&m); err != nil {
+				log.Printf("Ошибка при добавлении элемента в базу данных: %v", err)
+				} else {
+					log.Println("Элемент успешно добавлен в базу данных")
+				}
+		}
+	*/
 	// Используем err для операции Update
 	updatedMenu := &model.Menu{
 		ID:        60,
@@ -77,7 +76,7 @@ func main() {
 		Timestamp: time.Now(),
 	}
 
-    //update
+	//update
 
 	if err := app.models.Menu.Update(updatedMenu); err != nil {
 		log.Printf("Ошибка при обновлении элемента в базе данных: %v", err)
@@ -85,10 +84,9 @@ func main() {
 		log.Println("Элемент успешно обновлен в базу данных")
 	}
 
+	// Delete
 
-    // Delete
-    
-    for _, menu := range menus {
+	for _, menu := range menus {
 		if err := app.models.Menu.Delete(menu.ID); err != nil {
 			log.Printf("Ошибка при удалении элемента из базы данных: %v", err)
 		} else {

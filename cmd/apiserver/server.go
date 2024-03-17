@@ -8,12 +8,9 @@ import (
 	"github.com/Elaman122/Go-project/internal/app/model"
 	"github.com/sirupsen/logrus"
 
-
-
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
 )
-
 
 type server struct {
 	router       *mux.Router
@@ -38,8 +35,6 @@ func (app *application) respondWithJSON(w http.ResponseWriter, code int, payload
 	w.WriteHeader(code)
 	w.Write(response)
 }
-
-
 
 func (app *application) createCurrencyHandler(w http.ResponseWriter, r *http.Request) {
 	var input model.Menu
