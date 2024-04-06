@@ -37,7 +37,7 @@ type Menu struct {
 func main() {
 	var cfg config
 	flag.StringVar(&cfg.port, "port", ":8080", "API server port")
-	flag.StringVar(&cfg.db.dsn, "db-dsn", "postgresql://postgres:ElamaN200409@@localhost/golangpro3?sslmode=disable", "PostgreSQL DSN")
+	flag.StringVar(&cfg.db.dsn, "db-dsn", "postgresql://postgres:ElamaN200409@@localhost/golangpro228?sslmode=disable", "PostgreSQL DSN")
 
 	db, err := openDB(cfg)
 	if err != nil {
@@ -49,7 +49,7 @@ func main() {
 		config: cfg,
 		models: model.NewModels(db),
 	}
-
+	/*
 	menus := []model.Menu{
 		{ID: 64, Code: "USD", Rate: 1.0},
 		{ID: 65, Code: "EUR", Rate: 0.84},
@@ -57,7 +57,7 @@ func main() {
 		{ID: 67, Code: "RUB", Rate: 0.011},
 		{ID: 68, Code: "KZT", Rate: 0.0023},
 	}
-
+	*/
 	
 	// Используем err для операции Insert
 	/*
@@ -69,24 +69,24 @@ func main() {
 			}
 	}
 	*/	
-	// Используем err для операции Update
+	/* Используем err для операции Update
 	updatedMenu := &model.Menu{
 		ID:        60,
 		Code:      "NewCode",
 		Rate:      5.0,
 		Timestamp: time.Now(),
 	}
-
+	*/
     //update
-
+	/*
 	if err := app.models.Menu.Update(updatedMenu); err != nil {
 		log.Printf("Ошибка при обновлении элемента в базе данных: %v", err)
 	} else {
 		log.Println("Элемент успешно обновлен в базу данных")
 	}
+	*/
 
-
-    // Delete
+    /* Delete
     
     for _, menu := range menus {
 		if err := app.models.Menu.Delete(menu.ID); err != nil {
@@ -95,6 +95,8 @@ func main() {
 			log.Printf("Элемент с ID %d успешно удален из базы данных", menu.ID)
 		}
 	}
+
+	*/
 	app.run()
 }
 
