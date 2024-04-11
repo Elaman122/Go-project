@@ -8,140 +8,162 @@ import (
 	"github.com/Elaman122/Go-project/internal/app/model"
 	"github.com/sirupsen/logrus"
 
-
-
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
 )
 
-
-type server struct {
-	router       *mux.Router
-	logger       *logrus.Logger
-	sessionStore sessions.Store
-	application  *application
-}
-
-func (app *application) respondWithError(w http.ResponseWriter, code int, message string) {
-	app.respondWithJSON(w, code, map[string]string{"error": message})
-}
-
-func (app *application) respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
-	response, err := json.Marshal(payload)
-
-	if err != nil {
-		app.respondWithError(w, http.StatusInternalServerError, "500 Internal Server Error")
-		return
+	type server struct {
+		router       *mux.Router
+		logger       *logrus.Logger
+		sessionStore sessions.Store
+		application  *application
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(code)
-	w.Write(response)
-}
-
-
-
-func (app *application) createCurrencyHandler(w http.ResponseWriter, r *http.Request) {
-	var input model.Menu
-
-	err := app.readJSON(w, r, &input)
-	if err != nil {
-		app.respondWithError(w, http.StatusBadRequest, "Invalid request payload")
-		return
+	func (app *application) respondWithError(w http.ResponseWriter, code int, message string) {
+		app.respondWithJSON(w, code, map[string]string{"error": message})
 	}
 
-	err = app.models.Menu.Insert(&input)
-	if err != nil {
-		app.respondWithError(w, http.StatusInternalServerError, "500 Internal Server Error")
-		return
+	func (app *application) respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
+		response, err := json.Marshal(payload)
+		if err != nil {
+			app.respondWithError(w, http.StatusInternalServerError, "500 Internal Server Error")
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(code)
+		w.Write(response)
 	}
 
-	app.respondWithJSON(w, http.StatusCreated, input)
-}
+	func (app *application) createCurrencyHandler(w http.ResponseWriter, r *http.Request) {
+		var input model.Menu
 
-func (app *application) getCurrencyHandler(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	param := vars["menuId"]
+		err := app.readJSON(w, r, &input)
+		if err != nil {
+			app.respondWithError(w, http.StatusBadRequest, "Invalid request payload")
+			return
+		}
 
-	id, err := strconv.Atoi(param)
-	if err != nil || id < 1 {
-		app.respondWithError(w, http.StatusBadRequest, "Invalid currency ID")
-		return
+		err = app.models.Menu.Insert(&input)
+		if err != nil {
+			app.respondWithError(w, http.StatusInternalServerError, "500 Internal Server Error")
+			return
+		}
+
+		app.respondWithJSON(w, http.StatusCreated, input)
 	}
 
-	currency, err := app.models.Menu.Get(id)
-	if err != nil {
-		app.respondWithError(w, http.StatusNotFound, "404 Not Found")
-		return
+	func (app *application) getCurrencyHandler(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		param := vars["menuId"]
+
+		id, err := strconv.Atoi(param)
+		if err != nil || id < 1 {
+			app.respondWithError(w, http.StatusBadRequest, "Invalid currency ID")
+			return
+		}
+
+		currency, err := app.models.Menu.Get(id)
+		if err != nil {
+			app.respondWithError(w, http.StatusNotFound, "404 Not Found")
+			return
+		}
+
+		app.respondWithJSON(w, http.StatusOK, currency)
 	}
 
-	app.respondWithJSON(w, http.StatusOK, currency)
-}
+	func (app *application) updateCurrencyHandler(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		param := vars["menuId"]
 
-func (app *application) updateCurrencyHandler(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	param := vars["menuId"]
+		id, err := strconv.Atoi(param)
+		if err != nil || id < 1 {
+			app.respondWithError(w, http.StatusBadRequest, "Invalid currency ID")
+			return
+		}
 
-	id, err := strconv.Atoi(param)
-	if err != nil || id < 1 {
-		app.respondWithError(w, http.StatusBadRequest, "Invalid currency ID")
-		return
+		currency, err := app.models.Menu.Get(id)
+		if err != nil {
+			app.respondWithError(w, http.StatusNotFound, "404 Not Found")
+			return
+		}
+
+		var input model.Menu
+
+		err = app.readJSON(w, r, &input)
+		if err != nil {
+			app.respondWithError(w, http.StatusBadRequest, "Invalid request payload")
+			return
+		}
+
+		currency.Code = input.Code
+		currency.Rate = input.Rate
+		currency.Timestamp = input.Timestamp
+
+		err = app.models.Menu.Update(currency)
+		if err != nil {
+			app.respondWithError(w, http.StatusInternalServerError, "500 Internal Server Error")
+			return
+		}
+
+		app.respondWithJSON(w, http.StatusOK, currency)
 	}
 
-	currency, err := app.models.Menu.Get(id)
-	if err != nil {
-		app.respondWithError(w, http.StatusNotFound, "404 Not Found")
-		return
+	func (app *application) deleteCurrencyHandler(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		param := vars["menuId"]
+
+		id, err := strconv.Atoi(param)
+		if err != nil || id < 1 {
+			app.respondWithError(w, http.StatusBadRequest, "Invalid currency ID")
+			return
+		}
+
+		err = app.models.Menu.Delete(id)
+		if err != nil {
+			app.respondWithError(w, http.StatusInternalServerError, "500 Internal Server Error")
+			return
+		}
+
+		app.respondWithJSON(w, http.StatusOK, map[string]string{"result": "success"})
 	}
 
-	var input model.Menu
+	func (app *application) getAllCurrenciesHandler(w http.ResponseWriter, r *http.Request) {
+		// Извлечение параметров из URL запроса
+		page, _ := strconv.Atoi(r.URL.Query().Get("page"))
+		pageSize, _ := strconv.Atoi(r.URL.Query().Get("page_size"))
+		sort := r.URL.Query().Get("sort")
+		code := r.URL.Query().Get("code")
+		from, _ := strconv.Atoi(r.URL.Query().Get("from"))
+		to, _ := strconv.Atoi(r.URL.Query().Get("to"))
 
-	err = app.readJSON(w, r, &input)
-	if err != nil {
-		app.respondWithError(w, http.StatusBadRequest, "Invalid request payload")
-		return
+		
+	
+
+		// Создание Filters объекта на основе извлеченных параметров
+		filters := model.Filters{
+			Page:         page,
+			PageSize:     pageSize,
+			Sort:         sort,
+			SortSafeList: []string{"rate", "code", "timestamp"}, // Правильное заполнение SortSafeList
+		}
+
+		// Вызов метода GetAll вашей MenuModel с фильтрами
+		menu, metadata, err := app.models.Menu.GetAll(code, from, to, filters)
+		if err != nil {
+			// Обработка ошибки, если запрос не удалось выполнить
+			app.respondWithError(w, http.StatusInternalServerError, "Failed to fetch menus")
+			return
+		}
+
+		// Отправка ответа с данными меню и метаданными пагинации
+		response := map[string]interface{}{
+			"menus":    menu,
+			"metadata": metadata,
+		}
+		app.respondWithJSON(w, http.StatusOK, response)
 	}
 
-	currency.Code = input.Code
-	currency.Rate = input.Rate
-	currency.Timestamp = input.Timestamp
 
-	err = app.models.Menu.Update(currency)
-	if err != nil {
-		app.respondWithError(w, http.StatusInternalServerError, "500 Internal Server Error")
-		return
-	}
 
-	app.respondWithJSON(w, http.StatusOK, currency)
-}
 
-func (app *application) deleteCurrencyHandler(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	param := vars["menuId"]
-
-	id, err := strconv.Atoi(param)
-	if err != nil || id < 1 {
-		app.respondWithError(w, http.StatusBadRequest, "Invalid currency ID")
-		return
-	}
-
-	err = app.models.Menu.Delete(id)
-	if err != nil {
-		app.respondWithError(w, http.StatusInternalServerError, "500 Internal Server Error")
-		return
-	}
-
-	app.respondWithJSON(w, http.StatusOK, map[string]string{"result": "success"})
-}
-
-func (app *application) readJSON(w http.ResponseWriter, r *http.Request, dst interface{}) error {
-	dec := json.NewDecoder(r.Body)
-	dec.DisallowUnknownFields()
-
-	err := dec.Decode(dst)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}

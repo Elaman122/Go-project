@@ -1,6 +1,6 @@
 module github.com/Elaman122/Go-project
 
-go 1.12
+go 1.13
 
 require (
 	github.com/BurntSushi/toml v0.3.1
@@ -11,8 +11,9 @@ require (
 	github.com/gorilla/mux v1.7.3
 	github.com/gorilla/securecookie v1.1.2
 	github.com/gorilla/sessions v1.2.2
+	github.com/icrowley/fake v0.0.0-20221112152111-d7b7e2276db2 // indirect
 	github.com/lib/pq v1.2.0
 	github.com/sirupsen/logrus v1.4.2
-	github.com/stretchr/testify v1.3.0
+	github.com/stretchr/testify v1.7.5
 	golang.org/x/crypto v0.0.0-20190820162420-60c769a6c586
 )

@@ -9,7 +9,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/Elaman122/Go-project/internal/validator"
+	"github.com/Elaman122/Go-project/internal/app/validator"
 )
 
 // ScopeActivation defines the "activate" scope for scope in the tokens table.
