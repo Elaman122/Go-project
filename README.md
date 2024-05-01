@@ -12,7 +12,7 @@ This project is a RESTful API for managing currency information.
 ## Database Structure
 The database structure is represented as follows:
 
-### Таблица `currency`
+### Table `currency`
 - `id`: unique currency identifier (integer).
 - `code`: currency code (string).
 - `rate`: exchange rate (decimal number).

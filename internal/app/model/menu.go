@@ -107,14 +107,14 @@ func (m *MenuModel) GetPaginated(page int, pageSize int, sort string) ([]*Menu, 
 
 func (m *MenuModel) Insert(menu *Menu) error {
 	query := `
-		INSERT INTO menu (code, rate, timestamp) 
-		VALUES ($1, $2, $3) 
+		INSERT INTO menu (code, rate, timestamp, currency_code) 
+		VALUES ($1, $2, $3, $4) 
 		RETURNING id
 	`
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
-	return m.db.QueryRowContext(ctx, query, menu.Code, menu.Rate, menu.Timestamp).Scan(&menu.ID)
+	return m.db.QueryRowContext(ctx, query, menu.Code, menu.Rate, menu.Timestamp, menu.CurrencyCode).Scan(&menu.ID)
 }
 
 func (m *MenuModel) Get(id int) (*Menu, error) {
@@ -138,13 +138,13 @@ func (m *MenuModel) Get(id int) (*Menu, error) {
 func (m *MenuModel) Update(menu *Menu) error {
 	query := `
 		UPDATE menu
-		SET code = $1, rate = $2, timestamp = $3
-		WHERE id = $4
+		SET code = $1, rate = $2, timestamp = $3, currency_code = $4
+		WHERE id = $5
 	`
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
-	_, err := m.db.ExecContext(ctx, query, menu.Code, menu.Rate, menu.Timestamp, menu.ID)
+	_, err := m.db.ExecContext(ctx, query, menu.Code, menu.Rate, menu.Timestamp, menu.CurrencyCode, menu.ID)
 	return err
 }
 

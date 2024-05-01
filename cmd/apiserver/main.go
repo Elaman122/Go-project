@@ -3,69 +3,78 @@ package main
 import (
 	"database/sql"
 	"flag"
-	"log"
+	"fmt"
 	"net/http"
+	"os"
+	"sync"
 
 	"github.com/Elaman122/Go-project/internal/app/model"
-	"github.com/gorilla/mux"
+	"github.com/Elaman122/Go-project/internal/app/model/filler"
+	"github.com/Elaman122/Go-project/internal/jsonlog"
+	vcs "github.com/Elaman122/Go-project/internal/vss"
 	_ "github.com/lib/pq"
 )
 
-//config
+// config
+var (
+	version = vcs.Version()
+)
+
 type config struct {
-	port string
+	port int
 	env  string
+	fill bool
 	db   struct {
 		dsn string
 	}
 }
-// application 
+
+// application
 type application struct {
 	config config
 	models model.Models
+	logger *jsonlog.Logger
+	wg     sync.WaitGroup
 }
-
-
 
 func main() {
 	var cfg config
-	flag.StringVar(&cfg.port, "port", ":8080", "API server port")
+	flag.BoolVar(&cfg.fill, "fill", false, "Fill database with dummy data")
+	flag.IntVar(&cfg.port, "port", 8081, "API server port")
 	flag.StringVar(&cfg.db.dsn, "db-dsn", "postgresql://postgres:ElamaN200409@@localhost/golangpro228?sslmode=disable", "PostgreSQL DSN")
 
-	
+	logger := jsonlog.NewLogger(os.Stdout, jsonlog.LevelInfo)
+
 	db, err := openDB(cfg)
 	if err != nil {
-		log.Fatal(err)
+		logger.PrintError(err, nil)
+		return
 	}
-	defer db.Close()
+
+	defer func() {
+		if err := db.Close(); err != nil {
+			logger.PrintFatal(err, nil)
+		}
+	}()
 
 	app := &application{
 		config: cfg,
 		models: model.NewModels(db),
+		logger: logger,
 	}
 
-	app.run()
-}
+	if cfg.fill {
+		err = filler.PopulateDatabase(app.models)
+		if err != nil {
+			logger.PrintFatal(err, nil)
+			return
+		}
+	}
 
-
-func (app *application) run() {
-    r := mux.NewRouter()
-
-    v1 := r.PathPrefix("/api/v1").Subrouter()
-
-    // Обработчики для создания, получения, обновления и удаления элементов меню
-    v1.HandleFunc("/menus", app.createCurrencyHandler).Methods("POST")
-    v1.HandleFunc("/menus/{menuId:[0-9]+}", app.getCurrencyHandler).Methods("GET")
-    v1.HandleFunc("/menus/{menuId:[0-9]+}", app.updateCurrencyHandler).Methods("PUT")
-    v1.HandleFunc("/menus/{menuId:[0-9]+}", app.deleteCurrencyHandler).Methods("DELETE")
-
-    // Обработчик для получения списка меню с поддержкой пагинации, сортировки и фильтрации
-    v1.HandleFunc("/menufor", app.getAllCurrenciesHandler).Methods("GET")
-
-
-    log.Printf("Starting server on %s\n", app.config.port)
-    err := http.ListenAndServe(app.config.port, r)
-    log.Fatal(err)
+	err = http.ListenAndServe(fmt.Sprintf(":%d", app.config.port), app.routes())
+	if err != nil {
+    	logger.PrintFatal(err, nil)
+	}
 }
 
 func openDB(cfg config) (*sql.DB, error) {

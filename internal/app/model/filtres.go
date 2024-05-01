@@ -54,7 +54,6 @@ func (f Filters) sortColumn() string {
         }
     }
 
-    // Вернуть значение по умолчанию, например, первое значение из списка безопасных значений
     return f.SortSafeList[0]
 }
 

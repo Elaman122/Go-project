@@ -44,6 +44,7 @@ func (m PermissionModel) GetAllForUser(userID int64) (Permissions, error) {
 
 	rows, err := m.DB.QueryContext(ctx, query, userID)
 	if err != nil {
+		m.ErrorLog.Printf("Error querying permissions for user: %v", err)
 		return nil, err
 	}
 	defer func() {
@@ -59,6 +60,7 @@ func (m PermissionModel) GetAllForUser(userID int64) (Permissions, error) {
 
 		err := rows.Scan(&permission)
 		if err != nil {
+			m.ErrorLog.Printf("Error scanning row: %v", err)
 			return nil, err
 		}
 
@@ -66,6 +68,7 @@ func (m PermissionModel) GetAllForUser(userID int64) (Permissions, error) {
 	}
 
 	if err = rows.Err(); err != nil {
+		m.ErrorLog.Printf("Error iterating through rows: %v", err)
 		return nil, err
 	}
 
@@ -83,5 +86,38 @@ func (m PermissionModel) AddForUser(userID int64, codes ...string) error {
 	defer cancel()
 
 	_, err := m.DB.ExecContext(ctx, query, userID, pq.Array(codes))
-	return err
+	if err != nil {
+		m.ErrorLog.Printf("Error adding permissions for user: %v", err)
+		return err
+	}
+
+	return nil
+}
+
+func (m PermissionModel) CheckPermission(userID int64, requiredPermissionID int) (bool, error) {
+    var permissionID int
+    query := `
+		SELECT permission_id
+		FROM users_permissions
+		WHERE user_id = $1
+    `
+
+    ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+    defer cancel()
+
+    err := m.DB.QueryRowContext(ctx, query, userID).Scan(&permissionID)
+    if err != nil {
+        if err == sql.ErrNoRows {
+            return false, nil // No permission found for the user
+        }
+        m.ErrorLog.Printf("Error checking permission: %v", err)
+        return false, err
+    }
+
+    // Check if the user has the required permission
+    if permissionID == requiredPermissionID {
+        return true, nil // User has the required permission
+    }
+
+    return false, nil // User does not have the required permission
 }
